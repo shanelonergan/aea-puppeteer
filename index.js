@@ -2,6 +2,17 @@ const puppeteer = require('puppeteer');
 require('dotenv').config();
 
  const signup = async () => {
+
+    // time stuff
+    const  now = new Date();
+    const  millisTill12 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0, 0) - now;
+    if (millisTill10 < 0) {
+        console.log('it is after noon!')
+    } else {
+        setTimeout(function(){alert("It's 12pm!")}, millisTill12);
+    }
+
+
     const auditionTitle = 'Cape May Stage 2020 Season'
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
