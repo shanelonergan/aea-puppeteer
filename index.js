@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 require('dotenv').config();
 
- const signup = async (auditionTitle) => {
+ const signup = async () => {
 
     // time stuff
     // const  now = new Date();
@@ -22,26 +22,36 @@ require('dotenv').config();
     await page.goto('https://members.actorsequity.org/castingcall/signups/');
     await page.screenshot({path: 'signups.png'});
     const numSignups = await page.evaluate( () => {
-        const span = document.querySelector('#lblEPAResults')
+    const span = document.querySelector('#lblEPAResults')
         return span.innerText
     })
     console.log(numSignups)
-    if (numSignups === '0') {
-        console.log('no signups today!')
-        await browser.close();
-    } else {
-        const audition = await page.evaluate( () => {
-            const auditionColumn = document.getElementById('leftcolumnmain')
-            return auditionCards
-            // const filteredAuditions = auditionCards.filter(card => card.innerText.includes(auditionTitle))
-            // console.log(filteredAuditions)
-            // return filteredAuditions
+    // if (numSignups === '0') {
+    //     console.log('no signups today!')
+    //     await browser.close();
+    // } else {
+    await page.waitForSelector('#leftcolumnmain')
+    const auditionColumn = await page.$('#leftcolumnmain')
+    const links = await auditionColumn.$$eval('a', anchors => {
+        return anchors.map(anchor => anchor.innerText)
         })
-        console.log(audition)
-        await page.click(audition)
-        await page.screenshot({path: 'example.png'});
-        await browser.close();
-    }
+    console.log(links)
+    const audition = await page.evaluate( () => {
+        const auditionColumn = document.querySelector('#leftcolumnmain')
+        const links = auditionColumn.querySelectorAll('a')
+        const linksArr = Array.from(links)
+        const filteredAuditions = linksArr.filter(card => card.innerText.includes('Ogunquit Playhouse 2020 Season - NYC EPA'))
+        return filteredAuditions
+    })
+        // await page.goto('https://members.actorsequity.org/castingcall/signups/');
+        // await page.waitForSelector('.search-list-group-item')
+        // await page.screenshot({path: 'signups.png'});
+        // const links = await page.$$eval('li', anchors => anchors)
+    console.log(audition, 40)
+    await page.click(audition)
+    await page.screenshot({path: 'example.png'});
+    await browser.close();
+    // }
 }
 
 signup()
